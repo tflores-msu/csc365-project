@@ -17,7 +17,12 @@ app.get('/', function(req, res)
 
 app.get('/bill', function(req, res)
 {
-  res.render('home', { title : "Our Site", info : "NHK"});
+  let viewData = {
+    billNum : 'HB-108',
+    info : 'NHK'
+  };
+
+  res.render('bill', viewData);
 });
 
 const server = app.listen(3000, function() {
