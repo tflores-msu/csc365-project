@@ -15,7 +15,7 @@ app.get('/', function(req, res)
   res.render('home', { title : "Our Site", info : "NHK"});
 });
 
-app.get('/bill', function(req, res)
+app.get('/bill/:bill_id', function(req, res)
 {
   let viewData = {
     billNum : 'HB-108',

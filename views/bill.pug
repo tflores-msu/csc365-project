@@ -2,16 +2,15 @@ extends base
 
 block content
   div(class='flex row' style={overflow: 'hidden'})
-    div(style={ flex: '1 1 30%', padding: '2rem' })
+    div(style={ flex: '1 1 50%', padding: '2rem' })
       div
-        h5 Home / Business and Consumers / Bill HB-108
+        h5(class="navcrumbs") Home / Business and Consumers / Bill HB-108
         h1(class='huge') #{ billNum }
-        hr(style={ width: '', height: '2px'})
-      div(style={ flex: '1 1 65%'})
+      div(style={ flex: '1 1 65%', 'border-radius' : '2px', 'box-shadow' : '0px 0px 25px -10px rgba(0,0,0,0.75)'})
         div(class='flex column')
-          div(style={ flex: '1 1 50%'}) 
+          div(id="bill-overview", style={ flex: '1 1 33%', 'border-top-right-radius' : '2px', 'border-top-left-radius' : '2px'}) 
             h3 Overview
-            div(style={margin: 'auto 2rem auto 2rem'})
+            div(style={margin: 'auto 1rem auto 1.5rem'})
               i(id="bill-summary") Designates May as "Mental Health Awareness Month" and July as "Minority Mental Health Awareness Month in Missouri"
             div(style={'padding-left': '0.5rem'})
               div
@@ -19,9 +18,13 @@ block content
                 p Ways and Means
                 h5 Introduced By
                 p Chrissy Sommer
-          div(style={ flex: '1 1 50%'}) 
+          div(id="bill-status", style={ flex: '1 1 33%'}) 
             h3 Status
             p stuff here
-    div(style={ flex: '1 1 70%' })
+          div(style={flex: '1 1 33%', 'color': '#fff','background-color' : '#32213a', padding: '0.25rem 0rem 1.25rem 1.25rem', 'border-bottom-right-radius' : '2px', 'border-bottom-left-radius' : '2px  ' })
+            h3 More
+            p Tweet about this bill
+
+    div(style={ flex: '1 1 50%' })
       embed(src='https://house.mo.gov/billtracking/bills191/hlrbillspdf/0259H.01P.pdf', type='application/pdf' style={ width: '100%', height: '100%'}, frameborder='0')
 
