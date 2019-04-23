@@ -1,0 +1,39 @@
+extends base
+
+block content
+  div(class='flex column', style={padding: '2rem 0 0 0' })
+    div(class='flex column' style={ flex: '1 1 30%', padding: '0 2rem 0 2rem' })
+      h5(class="navcrumbs") Home / Search
+      h1(class='huge') Discover Legislation
+    div(class='flex column' style={ flex: '1 1 70%', padding: '0 2rem'})
+      div(class='flex')
+        div(style={'background-color' : '#1b1b1b', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '3px'}) 
+          h3 Agriculture and Food
+        div(class='flex column bill-card')
+          h3 Bill Title
+          hr
+          p Does shit yo.
+          b HB-109
+        div(class='flex column bill-card')
+          h3 Bill Title
+          hr
+          p Stops global warming.
+          b HB-209
+      div(class='flex', style={'margin-top' : '1rem'})
+        div(style={'background-color' : '#1b1b1b', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '3px'}) 
+          h3 Animal Rights and Wildlife Issues
+        div(class='flex column bill-card')
+          h3 Bill Title
+          hr
+          p Authorizes destruction of the universe.
+          b HB-666
+        div(class='flex column bill-card')
+          h3 Bill Title
+          hr
+          p Does some other shit.
+          b HB-244
+        div(class='flex column bill-card')
+          h3 Bill Title
+          hr
+          p Does the thing.
+          b HB-382

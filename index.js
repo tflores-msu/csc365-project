@@ -15,6 +15,11 @@ app.get('/', function(req, res)
   res.render('home', { title : "Our Site", info : "NHK"});
 });
 
+app.get('/search', function(req, res)
+{
+  res.render('search', { title : "Our Site", info : "NHK"});
+});
+
 app.get('/bill/:bill_id', function(req, res)
 {
   let viewData = {

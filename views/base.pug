@@ -2,8 +2,8 @@ doctype
 html
   head
     meta(charset='UTF-8')
-    link(href='/css/base.css', rel='stylesheet', type='text/css')
-
+    block css
+      link(rel='stylesheet', href='https://unpkg.com/turretcss/dist/turretcss.min.css', crossorigin='anonymous')
+      link(href='/css/base.css', rel='stylesheet', type='text/css')
     body
-      div(class="flex")
-        block content
+      block content
