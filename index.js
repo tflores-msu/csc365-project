@@ -4,7 +4,8 @@ const express = require('express'),
     passport = require('passport'),
     Strategy = require('passport-twitter').Strategy,
     expressSession = require('express-session'),
-    app = express();
+    app = express(),
+    crypto = require('crypto');
 
 const TWITTER_CONSUMER_KEY = 'Po4ZNAfWvEHAr3vuHS1LcNGzP';
 const TWITTER_CONSUMER_SECRET = 'R2SCzindQgTviFNr05CviP3GbRDvLedb95N8LZ000KkMCVj225';
@@ -21,11 +22,11 @@ function(token, tokenSecret, profile, cb) {
 
 
 passport.serializeUser(function(user, cb) {
-  cb(null, user);
+    cb(null, user);
 });
 
 passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
+    cb(null, obj);
 });
 
 
@@ -46,12 +47,12 @@ app.get('/', function(req, res)
 
 app.get('/bill/:bill_id', function(req, res)
 {
-  let viewData = {
-    billNum : 'HB-108',
-    info : 'NHK'
-  };
+    let viewData = {
+        billNum : 'HB-108',
+        info : 'NHK'
+    };
 
-  res.render('bill', viewData);
+    res.render('bill', viewData);
 });
 
 app.get('/login', passport.authenticate('twitter'));
@@ -63,12 +64,17 @@ const server = app.listen(3000, function() {
 });
 
 app.get('/auth/twitter/callback',
-  passport.authenticate('twitter', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
-});
+    passport.authenticate('twitter', { failureRedirect: '/login' }),
+    function(req, res) {
+        res.redirect('/');
+    }
+);
 
 
 app.get('/tweet', function(req, res){
   res.render('twittertest');
+});
+app.get('/webhooks/twitter', function(req,res){
+    hmac = crypto.createHmac('sha256', TWITTER_CONSUMER_SECRET).update(req.query.crc_token).digest('base64');
+    res.json({ 'response_token' : 'sha256=' + hmac});
 });
