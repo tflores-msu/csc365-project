@@ -5,7 +5,8 @@ const express = require('express'),
     Strategy = require('passport-twitter').Strategy,
     expressSession = require('express-session'),
     app = express(),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    openstates = require('./openstates.js');
 
 const TWITTER_CONSUMER_KEY = 'Po4ZNAfWvEHAr3vuHS1LcNGzP';
 const TWITTER_CONSUMER_SECRET = 'R2SCzindQgTviFNr05CviP3GbRDvLedb95N8LZ000KkMCVj225';
@@ -14,12 +15,9 @@ passport.use(new Strategy({
     consumerKey: TWITTER_CONSUMER_KEY,
     consumerSecret: TWITTER_CONSUMER_SECRET,
     callbackURL: "http://localhost:3000/auth/twitter/callback"
-},
-function(token, tokenSecret, profile, cb) {
+}, function(token, tokenSecret, profile, cb) {
     return cb(null, profile);
-}
-));
-
+}));
 
 passport.serializeUser(function(user, cb) {
     cb(null, user);
@@ -52,6 +50,8 @@ app.get('/search', function(req, res)
 
 app.get('/bill/:bill_id', function(req, res)
 {
+    openstates.getBillData("Missouri", "2019", "HB 108");
+
     let viewData = {
         billNum : 'HB-108',
         info : 'NHK'
