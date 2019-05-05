@@ -2,46 +2,70 @@
 
 const express = require('express'),
     passport = require('passport'),
-    Strategy = require('passport-twitter').Strategy,
+    TwitterStrategy = require('passport-twitter').Strategy,
     expressSession = require('express-session'),
     app = express(),
     crypto = require('crypto'),
+    request = require('request'),
+    twit = require('twit'),
+    bodyParser = require("body-parser"),
+    TWITTER_CONSUMER_KEY = 'm5II3VjLWqLONLWKqMcGqxOvC',
+    TWITTER_CONSUMER_SECRET = 'Ier7Pn2vEQOVESeokOh5pv6K2oZ4SactFRwdzZa24uUyiaxHxb',
     openstates = require('./openstates.js');
 
-const TWITTER_CONSUMER_KEY = 'Po4ZNAfWvEHAr3vuHS1LcNGzP';
-const TWITTER_CONSUMER_SECRET = 'R2SCzindQgTviFNr05CviP3GbRDvLedb95N8LZ000KkMCVj225';
-const BILL_NUM_REGEX = /^[SH]B-\d{3}/gmi
 
+const BILL_NUM_REGEX = /^[SH]B-\d{3}/gmi
 const ERROR_PAGE_TEXTS = {
     404 : "Woops, we couldn't find that bill or page.",
     500 : "An internal server error occured."
 }
 
-passport.use(new Strategy({
+passport.use(new TwitterStrategy({
+
     consumerKey: TWITTER_CONSUMER_KEY,
     consumerSecret: TWITTER_CONSUMER_SECRET,
     callbackURL: "http://localhost:3000/auth/twitter/callback"
-}, function(token, tokenSecret, profile, cb) {
-    return cb(null, profile);
+
+}, function(token, tokenSecret, profile, done) {
+    return done(null,profile); 
 }));
 
-passport.serializeUser(function(user, cb) {
-    cb(null, user);
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
 });
 
-passport.deserializeUser(function(obj, cb) {
-    cb(null, obj);
+passport.deserializeUser(function(user, done) {
+    done(null,user);
 });
 
+const ensureAuthenticated = function(req, res, next) {
+	if (req.isAuthenticated() === false) {
+		console.log('I dont think so!');
+		res.redirect('/login');
+		return;
+	}
+	next();
+};
 
 //Configuration
 app.use(express.static('static'));
-app.set('view engine', 'pug');
-app.set('views', 'views');
-
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(expressSession({ secret: 'hasej2jrlekjwezef436563fj21af', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+
+
+app.set('view engine', 'pug');
+app.set('views', 'views');
+//Configuration
+
+let t = new twit({
+    consumer_key : 'm5II3VjLWqLONLWKqMcGqxOvC',
+    consumer_secret : 'Ier7Pn2vEQOVESeokOh5pv6K2oZ4SactFRwdzZa24uUyiaxHxb',
+    access_token : '924278111704936448-PD9Zj7zhEzBUrYcwaEpR4HUCtHPmuVQ',
+    access_token_secret : 'yaQqigS6qyqVQcSm7VfYWKieHgTEvUQuDakyzVz2ksLNn'
+});
+
 //Routes
 
 app.get('/error/:status_code', function(req, res)
@@ -52,50 +76,56 @@ app.get('/error/:status_code', function(req, res)
   res.render('error', { errorText: ERROR_PAGE_TEXTS[status_code] });
 });
 
-app.get('/legislation', function(req, res)
+app.get('/', function(req, res)
 {
   res.render('legislation', { title : "Our Site", info : "NHK"});
 });
 
 app.get('/bill/:bill_id', function(req, res)
 {
-    let selectedBill = req.params.bill_id;
+    let selectedBill = req.params.bill_id || '';
 
-    if(selectedBill && BILL_NUM_REGEX.test(selectedBill))
+    console.log(selectedBill);
+    console.log(BILL_NUM_REGEX.test(selectedBill))
+
+    if(!BILL_NUM_REGEX.test(selectedBill))
     {
-        openstates.getBillData("Missouri", "2019", selectedBill.replace('-', ' ').toUpperCase(),
+        res.redirect('/error/404');
+    }
+
+    openstates.getBillData("Missouri", "2019", selectedBill.replace('-', ' ').toUpperCase(),
         
-        function(billData)
-        {
-            res.render('bill', { billData });
-        });
-    }
-    else
+    function(billData)
     {
-        res.redirect('/error/404')
-    }
+        res.render('bill', { billData });
+    });
 });
 
-app.get('/login', passport.authenticate('twitter'));
+
+app.get('/login', passport.authenticate('twitter', {failureRedirect : '/login', successRedirect : '/showBills'}));
+
+
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login', successRedirect : '/' }));
+
 
 const server = app.listen(3000, function() {
 
-  console.log(`Server is listening on port ${ server.address().port }`)
+    console.log(`Server is listening on port ${ server.address().port }`)
 
 });
 
-app.get('/auth/twitter/callback',
-    passport.authenticate('twitter', { failureRedirect: '/login' }),
-    function(req, res) {
-        res.redirect('/');
+
+app.get('/tweet',ensureAuthenticated, function(req, res){
+    try{
+        t.post('statuses/update', {status : statusParam}, function(err, data, response) {
+            res.json('{msg" : "success"}'); 
+        });
+    } catch{
+        res.json("{'msg' : 'failure', 'error' : " + e + " }"); 
     }
-);
-
-
-app.get('/tweet', function(req, res){
-  res.render('twittertest');
+    
 });
-app.get('/webhooks/twitter', function(req,res){
-    hmac = crypto.createHmac('sha256', TWITTER_CONSUMER_SECRET).update(req.query.crc_token).digest('base64');
-    res.json({ 'response_token' : 'sha256=' + hmac});
+
+app.get('/checkLogin',ensureAuthenticated, function(req,res){
+
 });

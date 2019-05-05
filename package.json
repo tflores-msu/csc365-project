@@ -9,12 +9,15 @@
   "author": "Mark Raymond Jr.",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "crypto": "^1.0.1",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
     "graphql-request": "^1.8.2",
     "passport": "^0.4.0",
     "passport-twitter": "^1.0.4",
-    "pug": "^2.0.3"
+    "pug": "^2.0.3",
+    "request": "^2.88.0",
+    "twit": "^2.2.11"
   }
 }
