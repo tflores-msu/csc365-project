@@ -48,7 +48,7 @@ const ensureAuthenticated = function(req, res, next) {
 };
 
 //Configuration
-app.use(express.static('static'));
+app.use(express.static('resources'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressSession({ secret: 'hasej2jrlekjwezef436563fj21af', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
@@ -82,9 +82,18 @@ openstates.getCurrentBills(5, 'upper');
   res.render('legislation', { title : "Our Site", info : "NHK"});
 });
 
+
+function alphaNumericStrip(str){
+    return str.replace(/[\W_]/g, '');
+    //return str; 
+}
+
 app.get('/bill/:bill_id', function(req, res)
 {
     let selectedBill = req.params.bill_id || '';
+    if(!expressSession.nonce){
+        expressSession.nonce = alphaNumericStrip(crypto.randomBytes(32).toString('base64'));
+    }
 
     // if(BILL_NUM_REGEX.test(selectedBill) !== true)
     // {
@@ -96,7 +105,7 @@ app.get('/bill/:bill_id', function(req, res)
         
     function(billData)
     {
-        res.render('bill', { billData });
+        res.render('bill', { billData, nonce : expressSession.nonce });
     });
 });
 
@@ -114,9 +123,23 @@ const server = app.listen(3000, function() {
 });
 
 
-app.get('/tweet',ensureAuthenticated, function(req, res){
+const ensureAuthenticatedTweet = function(req, res, next) {
+    console.log('session nonce: ' + expressSession.nonce);
+    console.log('ajax nonce : ' + req.query.nonce);
+    console.log('ajax status : ' + req.query.nonce);
+	if (!(req.query.nonce === expressSession.nonce)){
+		console.log('I dont think so!');
+		res.json("{'msg' : 'failure', 'error' : 'nonces did not match' }");
+		return;
+	}
+	next();
+};
+
+
+app.get('/tweet',ensureAuthenticatedTweet, function(req, res){
     try{
-        t.post('statuses/update', {status : statusParam}, function(err, data, response) {
+        
+        t.post('statuses/update', {status : req.query.status}, function(err, data, response) {
             res.json('{msg" : "success"}'); 
         });
     } catch{

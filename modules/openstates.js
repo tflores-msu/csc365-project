@@ -76,6 +76,7 @@ const obj = {
         identifier
         title
         classification
+        subject
         fromOrganization {
           name
         }
@@ -139,7 +140,7 @@ const obj = {
       let sponsorDetails = this.getBillAuthor(data.bill.sponsorships);
       let billMoreLink = this.getMoreLink(data.bill.sources, data.bill.fromOrganization);
 
-      console.log(JSON.stringify(data.bill.versions));
+      console.log(JSON.stringify(data.bill));
 
       let billData = {
         num : data.bill.identifier.replace(' ', '-'),
