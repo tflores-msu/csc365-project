@@ -11,7 +11,7 @@ const express = require('express'),
     bodyParser = require("body-parser"),
     TWITTER_CONSUMER_KEY = 'm5II3VjLWqLONLWKqMcGqxOvC',
     TWITTER_CONSUMER_SECRET = 'Ier7Pn2vEQOVESeokOh5pv6K2oZ4SactFRwdzZa24uUyiaxHxb',
-    openstates = require('./openstates.js');
+    openstates = require('./module/openstates.js');
 
 
 const BILL_NUM_REGEX = /^[SH]B-\d{3}/gmi
