@@ -2,56 +2,83 @@
 
 const express = require('express'),
     passport = require('passport'),
-    Strategy = require('passport-twitter').Strategy,
+    TwitterStrategy = require('passport-twitter').Strategy,
     expressSession = require('express-session'),
     app = express(),
     crypto = require('crypto'),
-    openstates = require('./openstates.js');
+    request = require('request'),
+    twit = require('twit'),
+    bodyParser = require("body-parser"),
+    TWITTER_CONSUMER_KEY = 'm5II3VjLWqLONLWKqMcGqxOvC',
+    TWITTER_CONSUMER_SECRET = 'Ier7Pn2vEQOVESeokOh5pv6K2oZ4SactFRwdzZa24uUyiaxHxb';
 
-const TWITTER_CONSUMER_KEY = 'Po4ZNAfWvEHAr3vuHS1LcNGzP';
-const TWITTER_CONSUMER_SECRET = 'R2SCzindQgTviFNr05CviP3GbRDvLedb95N8LZ000KkMCVj225';
+    passport.use(new TwitterStrategy({
 
-passport.use(new Strategy({
-    consumerKey: TWITTER_CONSUMER_KEY,
-    consumerSecret: TWITTER_CONSUMER_SECRET,
-    callbackURL: "http://localhost:3000/auth/twitter/callback"
-}, function(token, tokenSecret, profile, cb) {
-    return cb(null, profile);
-}));
+        consumerKey: TWITTER_CONSUMER_KEY,
+        consumerSecret: TWITTER_CONSUMER_SECRET,
+        callbackURL: "http://localhost:3000/auth/twitter/callback"
+    
+    }, function(token, tokenSecret, profile, done) {
+        return done(null,profile); 
+    }));
 
-passport.serializeUser(function(user, cb) {
-    cb(null, user);
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
 });
 
-passport.deserializeUser(function(obj, cb) {
-    cb(null, obj);
+passport.deserializeUser(function(user, done) {
+    done(null,user);
 });
 
+const ensureAuthenticated = function(req, res, next) {
+	if (req.isAuthenticated() === false) {
+		console.log('I dont think so!');
+		res.redirect('/login');
+		return;
+	}
+	next();
+};
 
 //Configuration
 app.use(express.static('static'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(expressSession({ secret: 'hasej2jrlekjwezef436563fj21af', resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 app.set('view engine', 'pug');
 app.set('views', 'views');
 
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+
+//Configuration
+
+
 //Routes
+
+let t = new twit({
+    consumer_key : 'm5II3VjLWqLONLWKqMcGqxOvC',
+    consumer_secret : 'Ier7Pn2vEQOVESeokOh5pv6K2oZ4SactFRwdzZa24uUyiaxHxb',
+    access_token : '924278111704936448-PD9Zj7zhEzBUrYcwaEpR4HUCtHPmuVQ',
+    access_token_secret : 'yaQqigS6qyqVQcSm7VfYWKieHgTEvUQuDakyzVz2ksLNn'
+});
+
+
+
+
+
+
+
 
 app.get('/', function(req, res)
 {
   res.render('home', { title : "Our Site", info : "NHK"});
 });
 
-app.get('/search', function(req, res)
-{
-  res.render('search', { title : "Our Site", info : "NHK"});
-});
+
 
 app.get('/bill/:bill_id', function(req, res)
 {
-    openstates.getBillData("Missouri", "2019", "HB 108");
-
     let viewData = {
         billNum : 'HB-108',
         info : 'NHK'
@@ -60,26 +87,34 @@ app.get('/bill/:bill_id', function(req, res)
     res.render('bill', viewData);
 });
 
-app.get('/login', passport.authenticate('twitter'));
+
+
+
+app.get('/login', passport.authenticate('twitter', {failureRedirect : '/login', successRedirect : '/showBills'}));
+
+
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login', successRedirect : '/' }));
+
+
 
 const server = app.listen(3000, function() {
 
-  console.log(`Server is listening on port ${ server.address().port }`)
+    console.log(`Server is listening on port ${ server.address().port }`)
 
-});
+});-
 
-app.get('/auth/twitter/callback',
-    passport.authenticate('twitter', { failureRedirect: '/login' }),
-    function(req, res) {
-        res.redirect('/');
+
+app.get('/tweet',ensureAuthenticated, function(req, res){
+    try{
+        t.post('statuses/update', {status : statusParam}, function(err, data, response) {
+            res.json('{msg" : "success"}'); 
+        });
+    } catch{
+        res.json("{'msg' : 'failure', 'error' : " + e + " }"); 
     }
-);
-
-
-app.get('/tweet', function(req, res){
-  res.render('twittertest');
+    
 });
-app.get('/webhooks/twitter', function(req,res){
-    hmac = crypto.createHmac('sha256', TWITTER_CONSUMER_SECRET).update(req.query.crc_token).digest('base64');
-    res.json({ 'response_token' : 'sha256=' + hmac});
+
+app.get('/checkLogin',ensureAuthenticated, function(req,res){
+
 });
