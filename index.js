@@ -43,14 +43,14 @@ app.get('/', function(req, res)
   res.render('home', { title : "Our Site", info : "NHK"});
 });
 
-app.get('/search', function(req, res)
+app.get('/legislation', function(req, res)
 {
-  res.render('search', { title : "Our Site", info : "NHK"});
+  res.render('legislation', { title : "Our Site", info : "NHK"});
 });
 
 app.get('/bill/:bill_id', function(req, res)
 {
-    openstates.getBillData("Missouri", "2019", "HB 108");
+    // openstates.getBillData("Missouri", "2019", "HB 108");
 
     let viewData = {
         billNum : 'HB-108',

@@ -1,22 +1,20 @@
 extends base
 
-block prepend css
-  link(rel='stylesheet', href='https://unpkg.com/turretcss/dist/turretcss.min.css', crossorigin='anonymous')
-
-
 block content
-  div(class='flex row' style={overflow: 'hidden', height : '100%'})
-    div(style={ flex: '1 1 50%', padding: '2rem' })
-      div
-        h5(class="navcrumbs") Home / Business and Consumers / Bill HB-108
-        h1(class='huge') #{ billNum }
-      div(style={ flex: '1 1 65%', 'border-radius' : '2px', 'box-shadow' : '0px 0px 25px -10px rgba(0,0,0,0.75)'})
+  div(class='flex row' style={overflow: 'hidden', height : '100%', 'background-color' : '#eeeee4'})
+    div(class="flex column" style={ flex: '1 1 33.3333%', 'padding-left' : '1rem', 'color' : '#2b2b2b' })
+      h5(class="navcrumbs") Home / Business and Consumers / HB-108
+      div(style={'margin' : 'auto 0 auto'})
+        h1(class='huge' style={'line-height' : '100%'}) #{ billNum }
+        i Authored by Chrissy Sommer (Republican - 106)
+    div(style={ flex: '1 1 33.3333%', 'padding' : '1rem', 'background-color' : '#d0d1ac'})
+      div(style={ flex: '1 1 65%', 'border-radius' : '2px'})
         div(class='flex column')
           div(id="bill-overview", style={ flex: '1 1 33%', 'border-top-right-radius' : '3px', 'border-top-left-radius' : '3px'}) 
             h3 Overview
             div(style={margin: 'auto 1rem auto 1.5rem'})
               i(id="bill-summary") Designates May as "Mental Health Awareness Month" and July as "Minority Mental Health Awareness Month in Missouri"
-            div(style={'padding-left': '0.5rem'})
+            div(style={'padding-left': '0.5rem', 'margin-top' : '0.5rem'})
               div
                 h5 Committee
                 p Ways and Means
@@ -28,7 +26,6 @@ block content
           div(id="bill-more")
             h3 More
             p Tweet about this bill
-
-    div(style={ flex: '1 1 50%'})
+    div(style={ flex: '1 1 33.3333%'})
       embed(src='https://house.mo.gov/billtracking/bills191/hlrbillspdf/0259H.01P.pdf', type='application/pdf' style={ width: '100%', height: '100%'}, frameborder='0')
 
