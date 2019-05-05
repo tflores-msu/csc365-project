@@ -14,7 +14,7 @@ const express = require('express'),
     openstates = require('./openstates.js');
 
 
-const BILL_NUM_REGEX = /^[SH]B-\d{3}/gmi
+const BILL_NUM_REGEX = /^[SH][CJ]?[BR]-\d{3,4}/gmi
 const ERROR_PAGE_TEXTS = {
     404 : "Woops, we couldn't find that bill or page.",
     500 : "An internal server error occured."
@@ -88,6 +88,7 @@ app.get('/bill/:bill_id', function(req, res)
     // if(BILL_NUM_REGEX.test(selectedBill) !== true)
     // {
     //     res.redirect('/error/404');
+    //     return;
     // }
 
     openstates.getBillData("Missouri", "2019", selectedBill.replace('-', ' ').toUpperCase(),
