@@ -85,13 +85,10 @@ app.get('/bill/:bill_id', function(req, res)
 {
     let selectedBill = req.params.bill_id || '';
 
-    console.log(selectedBill);
-    console.log(BILL_NUM_REGEX.test(selectedBill))
-
-    if(!BILL_NUM_REGEX.test(selectedBill))
-    {
-        res.redirect('/error/404');
-    }
+    // if(BILL_NUM_REGEX.test(selectedBill) !== true)
+    // {
+    //     res.redirect('/error/404');
+    // }
 
     openstates.getBillData("Missouri", "2019", selectedBill.replace('-', ' ').toUpperCase(),
         

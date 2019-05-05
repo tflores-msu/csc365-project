@@ -85,7 +85,7 @@ const obj = {
 
 
       let billData = {
-        num : data.bill.identifier,
+        num : data.bill.identifier.replace(' ', '-'),
         title : data.bill.title,
         author : this.getBillAuthor(data.bill.sponsorships)
       };
