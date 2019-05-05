@@ -3,16 +3,16 @@ extends base
 block content
   div(class='flex row' style={overflow: 'hidden', height : '100%', 'background-color' : '#eeeee4'})
     div(class="flex column" id="bill-hero-container")
-      h5(class="navcrumbs") Home / Business and Consumers / HB-108
+      h5(class="navcrumbs") Home / Business and Consumers / #{ billData.num }
       div(style={'margin' : 'auto 0 auto'})
-        h1(class='huge' style={'line-height' : '100%'}) #{ billNum }
-        i Authored by Chrissy Sommer (Republican - 106)
+        h1(class='huge' style={'line-height' : '100%'}) #{ billData.num }
+        i Authored by #{ billData.author } (Republican - 106)
     div(class="flex column" id="bill-info-container")
       div(id="bill-overview") 
         h3 Overview
         div(style={margin: 'auto 1rem auto 1.5rem'})
           i(id="bill-summary") Designates May as "Mental Health Awareness Month" and July as "Minority Mental Health Awareness Month in Missouri"
-        div(style={'padding-left': '0.5rem', 'margin-top' : '0.5rem'})
+        div(style={'padding-left': '5rem', 'margin-top' : '0.5rem'})
           div
             h5 Committee
             p Ways and Means

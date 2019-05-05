@@ -13,25 +13,50 @@ const graphClient = new graphql_request.GraphQLClient(OPEN_STATES_ENDPOINT, {
 const currentYear = new Date().getFullYear();
 
 const obj = {
-  getBillData : function(state, session, billNum) {
+
+  getBillAuthor(sponsorships) {
+
+    let mainSponsor = null;
+
+    if(sponsorships.length > 1) {
+      sponsorships.forEach(function (sponsor) {
+        if(sponsor.primary && sponsor.classification === 'primary')
+        {
+          mainSponsor = sponsor.name;
+        }
+      });
+    }
+    else {
+      mainSponsor = sponsorships[0].name;
+    }
+
+    return mainSponsor;
+    
+  },
+  
+  getBillData : function(state, session, billNum, callback) {
+
     let query = `    {
       bill(jurisdiction: "${state}", session: "${session}", identifier: "${billNum}") {
-        id
         identifier
         title
         classification
-        updatedAt
-        createdAt
+        actions {
+          description,
+          classification,
+          order,
+          vote {
+            startDate,
+            motionText,
+            motionClassification,
+            result
+          }
+        }
         legislativeSession {
           identifier
           jurisdiction {
             name
           }
-        }
-        actions {
-          date
-          description
-          classification
         }
         documents {
           date
@@ -40,6 +65,12 @@ const obj = {
             url
           }
         }
+        sponsorships {
+          name
+          entityType
+          primary
+          classification
+        }
         versions {
           date
           note
@@ -47,16 +78,21 @@ const obj = {
             url
           }
         }
-        sources {
-          url
-          note
-        }
       }
     }`
   
-    graphClient.request(query).then(data =>
-        console.log(JSON.stringify(data))
-    )
+    graphClient.request(query).then(data => {
+
+
+      let billData = {
+        num : data.bill.identifier,
+        author : this.getBillAuthor(data.bill.sponsorships)
+      };
+
+      console.log(data);
+
+      callback(billData);
+    })
   },
 
   getCurrentBills : function(numBills, chamber)
@@ -77,31 +113,6 @@ const obj = {
                   name
                 }
               }
-              actions {
-                date
-                description
-                classification
-              }
-              documents {
-                date
-                note
-                links {
-                  url
-                }
-              }
-              versions {
-                date
-                note
-                links {
-                  url
-                }
-              }
-              
-              sources {
-                url
-                note
-                  
-              }
             }
           }
         }
@@ -109,7 +120,7 @@ const obj = {
     `
 
     graphClient.request(query).then(data =>
-      console.log(JSON.stringify(data))
+      console.log(data)
     )
   }
 }

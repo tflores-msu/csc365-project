@@ -10,6 +10,12 @@ const express = require('express'),
 
 const TWITTER_CONSUMER_KEY = 'Po4ZNAfWvEHAr3vuHS1LcNGzP';
 const TWITTER_CONSUMER_SECRET = 'R2SCzindQgTviFNr05CviP3GbRDvLedb95N8LZ000KkMCVj225';
+const BILL_NUM_REGEX = /^[SH]B-\d{3}/gmi
+
+const ERROR_PAGE_TEXTS = {
+    404 : "Woops, we couldn't find that bill or page.",
+    500 : "An internal server error occured."
+}
 
 passport.use(new Strategy({
     consumerKey: TWITTER_CONSUMER_KEY,
@@ -38,9 +44,12 @@ app.use(passport.session());
 app.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 //Routes
 
-app.get('/', function(req, res)
+app.get('/error/:status_code', function(req, res)
 {
-  res.render('home', { title : "Our Site", info : "NHK"});
+  let status_code = req.params.status_code || 500;
+  res.status(status_code);
+
+  res.render('error', { errorText: ERROR_PAGE_TEXTS[status_code] });
 });
 
 app.get('/legislation', function(req, res)
@@ -50,14 +59,21 @@ app.get('/legislation', function(req, res)
 
 app.get('/bill/:bill_id', function(req, res)
 {
-    // openstates.getBillData("Missouri", "2019", "HB 108");
+    let selectedBill = req.params.bill_id;
 
-    let viewData = {
-        billNum : 'HB-108',
-        info : 'NHK'
-    };
-
-    res.render('bill', viewData);
+    if(selectedBill && BILL_NUM_REGEX.test(selectedBill))
+    {
+        openstates.getBillData("Missouri", "2019", selectedBill.replace('-', ' ').toUpperCase(),
+        
+        function(billData)
+        {
+            res.render('bill', { billData });
+        });
+    }
+    else
+    {
+        res.redirect('/error/404')
+    }
 });
 
 app.get('/login', passport.authenticate('twitter'));
