@@ -11,10 +11,10 @@ const express = require('express'),
     bodyParser = require("body-parser"),
     TWITTER_CONSUMER_KEY = 'm5II3VjLWqLONLWKqMcGqxOvC',
     TWITTER_CONSUMER_SECRET = 'Ier7Pn2vEQOVESeokOh5pv6K2oZ4SactFRwdzZa24uUyiaxHxb',
-    openstates = require('./module/openstates.js');
+    openstates = require('./modules/openstates.js');
 
 
-const BILL_NUM_REGEX = /^[SH][CJ]?[BR]-\d{3,4}/gmi
+const BILL_NUM_REGEX = /^[SH][CJ]?[BR]-\d{1,4}/gmi
 const ERROR_PAGE_TEXTS = {
     404 : "Woops, we couldn't find that bill or page.",
     500 : "An internal server error occured."
@@ -78,6 +78,7 @@ app.get('/error/:status_code', function(req, res)
 
 app.get('/', function(req, res)
 {
+openstates.getCurrentBills(5, 'upper');
   res.render('legislation', { title : "Our Site", info : "NHK"});
 });
 

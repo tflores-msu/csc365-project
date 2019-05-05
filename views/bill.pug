@@ -5,18 +5,31 @@ block content
     div(class="flex column" id="bill-hero-container")
       h5(class="navcrumbs") Home / Business and Consumers / #{ billData.num }
       div(style={'margin' : 'auto 0 auto'})
-        h1(class='huge' style={'line-height' : '100%'}) #{ billData.num }
-        i Authored by #{ billData.author } (Republican - 106)
+        h1(class='huge' id="bill-num") #{ billData.num }
+        i Authored by #{ billData.author } 
+          if billData.affiliation
+            | (billData.affiliation)
     div(class="flex column" id="bill-info-container")
       div(id="bill-overview") 
-        h3 
-          | Overview & Status
+        h3 Overview 
         div
-          p #{ billData.title }
+        p #{ billData.title }.
+        h3 Status
+        if billData.status
+          #{billData.status}
+        else
+          | No status data about this bill is available.
+        p #{ billData.status }
+        h3 Details
+        p 
+         a(href=billData.link) View details about this bill.
       div(id="bill-more")
         h3 More
         p Tweet about this bill
+        
 
-    div(style={ flex: '1 1 33.3333%'})
-      embed(src='https://house.mo.gov/billtracking/bills191/hlrbillspdf/0259H.01P.pdf', type='application/pdf' style={ width: '100%', height: '100%'}, frameborder='0')
-
+    div(class="flex" style={ flex: '1 1 33.3333%', 'background-color' : '#f79f79', })
+      if billData.documentAvailable
+        embed(src=billData.pdf_link, type='application/pdf' style={ width: '100%', height: '100%'}, frameborder='0')
+      else
+        b(class="centered") This bill's full PDF isn't available.
