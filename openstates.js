@@ -86,10 +86,11 @@ const obj = {
 
       let billData = {
         num : data.bill.identifier,
+        title : data.bill.title,
         author : this.getBillAuthor(data.bill.sponsorships)
       };
 
-      console.log(data);
+      // console.log(data);
 
       callback(billData);
     })

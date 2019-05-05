@@ -62,16 +62,9 @@ h1.decent {
 }
 
 #bill-more {
-  flex: 1 1 33.3333%;
+  flex: 1 1 50%;
   color: white;
   background-color: #2b2b2b;
-  padding: 1rem;
-}
-
-#bill-status {
-  flex: 1 1 33.3333%;
-  color: white;
-  background-color: #627264;
   padding: 1rem;
 }
 
@@ -86,7 +79,7 @@ h1.decent {
 }
 
 #bill-overview {
-  flex: 1 1 33.3333%;
+  flex: 1 1 50%;
   color: white;
   background-color: #627264;
   padding: 1rem;
