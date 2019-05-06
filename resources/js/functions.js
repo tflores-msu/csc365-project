@@ -51,7 +51,9 @@ async function sendTweet(){
 		}
 	})
 		.then(response => {
-			console.log(response.json());
-		});
+            if (response.ok) alert('Tweet has been sent!');
+            console.log(response.json());
+            
+        });
 
 }
