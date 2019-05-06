@@ -1,11 +1,13 @@
 extends base
-
+block title
+    title #{billData.num}
+    
 block content
 
-  div(class='flex row' style={overflow: 'hidden', height : '100%', 'background-color' : '#eeeee4'})
+  div(class='flex row overall-container')
     div(class="flex column" id="bill-hero-container")
       h5(class="navcrumbs") Home / Business and Consumers / #{ billData.num }
-      div(style={'margin' : 'auto 0 auto'})
+      div(class='margina0a')
         h1(class='huge' id="bill-num") #{ billData.num }
         i Authored by #{ billData.author } 
           if billData.affiliation
@@ -30,9 +32,9 @@ block content
         button(onclick='prepTweet()' class="button" id='prepTweetButton') Tweet about #{billData.num}
         input( id='nonce' type='hidden' value=nonce)
 
-    div(class="flex" style={ flex: '1 1 33.3333%', 'background-color' : '#f79f79', })
+    div(class="flex embed-container")
       if billData.documentAvailable
-        embed(src=billData.pdf_link, type='application/pdf' style={ width: '100%', height: '100%'}, frameborder='0')
+        embed(src=billData.pdf_link, type='application/pdf' class='embed', frameborder='0')
       else
         b(class="centered") This bill's full PDF isn't available.
         
