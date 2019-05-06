@@ -177,7 +177,7 @@ const obj = {
 
 		graphClient.request(query).then(data => {
 			callback(data.bills.edges);
-    });
+		});
 	}
 };
 

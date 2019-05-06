@@ -1,12 +1,20 @@
 extends base
 block title
-    title #{billData.num}
-    
+    if billData.documentAvailable
+      title MO Senate | #{billData.num}
+    else
+      title MO House | #{billData.num}
+  
 block content
 
   div(class='flex row overall-container')
     div(class="flex column" id="bill-hero-container")
-      h5(class="navcrumbs") Home / #{ billData.num }
+      h5(class="navcrumbs") 
+        a(href="/") Home
+        span  | 
+        a(href="/legislation") Legislation
+        span  |
+        |  #{ billData.num }
       div(class='margina0a')
         h1(class='huge' id="bill-num") #{ billData.num }
         i Authored by #{ billData.author } 

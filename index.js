@@ -13,11 +13,11 @@ const express = require('express'),
 	openstates = require('./modules/openstates.js');
 
 
-const BILL_NUM_REGEX = /^[SH][CJ]?[BR]-\d{1,4}/gmi;
-const BILL_CATEGORIES = [{ 'name' : 'Agriculture and Food', 'color' : '#f79f79' }, 
-	{ 'name' : 'Animal Rights and Wildlife Issues', 'color' : '#2D6270' },
-	{ 'name' : 'Health and Medicine', 'color' : '#2b2b2b' },
-	{ 'name' : 'Science and Technology', 'color' : '#627264'}];
+// const BILL_NUM_REGEX = /^[SH][CJ]?[BR]-\d{1,4}/gmi;
+const BILL_CATEGORIES = [{ 'name' : 'Agriculture and Food', 'color' : '#f79f79', bills : null }, 
+	{ 'name' : 'Animal Rights and Wildlife Issues', 'color' : '#2D6270', bills : null },
+	{ 'name' : 'Health and Medicine', 'color' : '#2b2b2b', bills : null },
+	{ 'name' : 'Science and Technology', 'color' : '#627264', bills :null}];
 
 const ERROR_PAGE_TEXTS = {
 	404 : 'Woops, we couldn\'t find that bill or page.',
@@ -82,9 +82,16 @@ app.get('/error/:status_code', function(req, res)
 
 app.get('/legislation', ensureAuthenticated, function(req, res)
 {
-	openstates.getCurrentBills(3, 'upper', function(billData) {
+	openstates.getCurrentBills(12, 'upper', function(billData) {
 
-		res.render('legislation', { availableBills : billData, billCategories : BILL_CATEGORIES});
+		let chunkedBills = chunkArray(billData, 3);
+		
+		for(let i = 0; i < BILL_CATEGORIES.length; i++)
+		{
+			BILL_CATEGORIES[i].bills = chunkedBills[i];
+		}
+
+		res.render('legislation', { billCategories : BILL_CATEGORIES});
 
 	});
     
@@ -99,6 +106,20 @@ app.get('/', function(req, res)
 
 function alphaNumericStrip(str){
 	return str.replace(/[\W_]/g, '');
+}
+
+function chunkArray(myArray, chunk_size){
+	let index = 0;
+	let arrayLength = myArray.length;
+	let tempArray = [];
+	
+	for (index = 0; index < arrayLength; index += chunk_size) {
+		let myChunk = myArray.slice(index, index+chunk_size);
+		// Do something if you want with the group
+		tempArray.push(myChunk);
+	}
+
+	return tempArray;
 }
 
 app.get('/bill/:bill_id', ensureAuthenticated, function(req, res)
@@ -153,7 +174,7 @@ app.get('/tweet',ensureAuthenticatedTweet, function(req, res) {
 
 	try {
         
-		t.post('statuses/update', {status : req.query.status}, function(err, data, response) {
+		t.post('statuses/update', {status : req.query.status}, function(error, data, response) {
 			res.json('{msg" : "Sucessfully tweeted."}'); 
 		});
 	} 

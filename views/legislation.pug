@@ -1,23 +1,26 @@
 extends base
 
 block content
-  div(class='flex column', style={'padding-bottom' : '1rem', 'color' : '#2b2b2b;'})
+  div(class='flex column' id="legislation-container")
     div(class='flex column' style={ flex: '1 1 30%', padding: '0 2rem 0 1rem' })
-      h5(class="navcrumbs") Home / Legislation
+      h5(class='navcrumbs') 
+        a(href="/") Home
+        span  | 
+        | Legislation
       h1(class='decent') Discover Legislation
     div(class='flex column' style={ flex: '1 1 70%', padding: '0 1rem'})
       each billCat in billCategories
         div(class='flex', style={'margin-top' : '0.5rem'})
-          div(style={'background-color' : billCat.color, 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
+          div(class='bill-category' style={'background-color' : billCat.color}) 
             h3= billCat.name
-          each bill in availableBills
+          each bill in billCat.bills
             div(class='flex column bill-card')
               h3= bill.node.identifier
               hr
               p= bill.node.title
-              button(class="centered") View
+              button(class='centered') View
       div(class='flex', style={'margin-top' : '0.5rem'})
-        div(style={'background-color' : '#2D6270', 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
+        div(class='bill-category' id='static-bill-category') 
           h3 Other
         div(class='flex column bill-card')
           h3 HB-244
