@@ -55,10 +55,6 @@ const obj = {
 		}
 
 		sponsorDetails.name = mainSponsor.name;
-		if(mainSponsor.familyName)
-		{
-			console.log(mainSponsor.familyName);
-		}
 
 		if(mainSponsor.person)
 		{
@@ -140,8 +136,6 @@ const obj = {
 			let sponsorDetails = this.getBillAuthor(data.bill.sponsorships);
 			let billMoreLink = this.getMoreLink(data.bill.sources, data.bill.fromOrganization);
 
-			console.log(JSON.stringify(data.bill));
-
 			let billData = {
 				num : data.bill.identifier.replace(' ', '-'),
 				title : data.bill.title,
@@ -157,7 +151,7 @@ const obj = {
 		});
 	},
 
-	getCurrentBills : function(numBills, chamber)
+	getCurrentBills : function(numBills, chamber, callback)
 	{
 		let query = `{
       bills(first: ${numBills}, jurisdiction: "Missouri", session: "${currentYear}", chamber: "${chamber}") {
@@ -181,9 +175,9 @@ const obj = {
       }
     `;
 
-		graphClient.request(query).then(data =>
-			console.log(data)
-		);
+		graphClient.request(query).then(data => {
+			callback(data.bills.edges);
+    });
 	}
 };
 

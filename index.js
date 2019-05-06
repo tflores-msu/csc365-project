@@ -14,6 +14,11 @@ const express = require('express'),
 
 
 const BILL_NUM_REGEX = /^[SH][CJ]?[BR]-\d{1,4}/gmi;
+const BILL_CATEGORIES = [{ 'name' : 'Agriculture and Food', 'color' : '#f79f79' }, 
+	{ 'name' : 'Animal Rights and Wildlife Issues', 'color' : '#2D6270' },
+	{ 'name' : 'Health and Medicine', 'color' : '#2b2b2b' },
+	{ 'name' : 'Science and Technology', 'color' : '#627264'}];
+
 const ERROR_PAGE_TEXTS = {
 	404 : 'Woops, we couldn\'t find that bill or page.',
 	500 : 'An internal server error occured.'
@@ -39,7 +44,7 @@ passport.deserializeUser(function(user, done) {
 
 const ensureAuthenticated = function(req, res, next) {
 	if (req.isAuthenticated() === false) {
-		console.log('I dont think so!');
+		console.log('User is not authenticated.');
 		res.redirect('/login');
 		return;
 	}
@@ -75,19 +80,28 @@ app.get('/error/:status_code', function(req, res)
 	res.render('error', { errorText: ERROR_PAGE_TEXTS[status_code] });
 });
 
+app.get('/legislation', ensureAuthenticated, function(req, res)
+{
+	openstates.getCurrentBills(3, 'upper', function(billData) {
+
+		res.render('legislation', { availableBills : billData, billCategories : BILL_CATEGORIES});
+
+	});
+    
+});
+
 app.get('/', function(req, res)
 {
-	openstates.getCurrentBills(10, 'upper');
-	res.render('legislation', { title : 'Our Site', info : 'NHK'});
+	res.render('home');
+    
 });
 
 
 function alphaNumericStrip(str){
 	return str.replace(/[\W_]/g, '');
-	//return str; 
 }
 
-app.get('/bill/:bill_id', function(req, res)
+app.get('/bill/:bill_id', ensureAuthenticated, function(req, res)
 {
 	let selectedBill = req.params.bill_id || '';
 	if(!expressSession.nonce){
@@ -109,10 +123,10 @@ app.get('/bill/:bill_id', function(req, res)
 });
 
 
-app.get('/login', passport.authenticate('twitter', {failureRedirect : '/login', successRedirect : '/showBills'}));
+app.get('/login', passport.authenticate('twitter', {failureRedirect : '/login', successRedirect : '/legislation'}));
 
 
-app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login', successRedirect : '/' }));
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login', successRedirect : '/legislation' }));
 
 
 const server = app.listen(3000, function() {
@@ -127,7 +141,7 @@ const ensureAuthenticatedTweet = function(req, res, next) {
 	console.log('ajax nonce : ' + req.query.nonce);
 	console.log('ajax status : ' + req.query.nonce);
 	if (!(req.query.nonce === expressSession.nonce)){
-		console.log('I dont think so!');
+		console.log('Failed to authenticate.');
 		res.json('{\'msg\' : \'failure\', \'error\' : \'nonces did not match\' }');
 		return;
 	}
@@ -140,7 +154,7 @@ app.get('/tweet',ensureAuthenticatedTweet, function(req, res) {
 	try {
         
 		t.post('statuses/update', {status : req.query.status}, function(err, data, response) {
-			res.json('{msg" : "success"}'); 
+			res.json('{msg" : "Sucessfully tweeted."}'); 
 		});
 	} 
 	catch(e) {

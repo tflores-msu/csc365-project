@@ -2,79 +2,32 @@ extends base
 
 block content
   div(class='flex column', style={'padding-bottom' : '1rem', 'color' : '#2b2b2b;'})
-    div(class='flex column' style={ flex: '1 1 30%', padding: '0 2rem 0 1rem', 'margin-bottom' : '1rem' })
+    div(class='flex column' style={ flex: '1 1 30%', padding: '0 2rem 0 1rem' })
       h5(class="navcrumbs") Home / Legislation
       h1(class='decent') Discover Legislation
     div(class='flex column' style={ flex: '1 1 70%', padding: '0 1rem'})
-      div(class='flex')
-        div(style={'background-color' : '#627264', 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
-          h3 Agriculture and Food
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does shit yo.
-          b HB-109
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Stops global warming.
-          b HB-209
-      div(class='flex', style={'margin-top' : '0.5rem'})
-        div(style={'background-color' : '#2b2b2b', 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
-          h3 Animal Rights and Wildlife Issues
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Authorizes destruction of the universe.
-          b HB-666
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does some other shit.
-          b HB-244
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does the thing.
-          b HB-382
-      div(class='flex', style={'margin-top' : '0.5rem'})
-        div(style={'background-color' : '#f79f79', 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
-          h3 Immigration
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does some other shit.
-          b HB-244
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does the thing.
-          b HB-382
+      each billCat in billCategories
+        div(class='flex', style={'margin-top' : '0.5rem'})
+          div(style={'background-color' : billCat.color, 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
+            h3= billCat.name
+          each bill in availableBills
+            div(class='flex column bill-card')
+              h3= bill.node.identifier
+              hr
+              p= bill.node.title
+              button(class="centered") View
       div(class='flex', style={'margin-top' : '0.5rem'})
         div(style={'background-color' : '#2D6270', 'color' : '#ffffff', flex : '0 0 20%', padding : '1rem', margin : '0 0.25rem 0 0rem', 'border-radius' : '0px'}) 
-          h3 Science and Technology
+          h3 Other
         div(class='flex column bill-card')
-          h3 Bill Title
+          h3 HB-244
           hr
-          p Does some other shit.
-          b HB-244
+          p Stops global warming.
         div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does the thing.
-          b HB-382
-        div(class='flex column bill-card')
-          h3 Bill Title
+          h3 HB-424
           hr
           p Does the thing.
-          b HB-382
         div(class='flex column bill-card')
-          h3 Bill Title
+          h3 HB-666
           hr
-          p Does the thing.
-          b HB-382
-        div(class='flex column bill-card')
-          h3 Bill Title
-          hr
-          p Does the thing.
-          b HB-382
+          p Authorizes destruction of the universe.
