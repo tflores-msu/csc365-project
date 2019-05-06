@@ -34,6 +34,12 @@ hr {
 
 /**************** CUSTOM ELEMENTS *****************/
 
+.logo-image {
+  max-width: 72px;
+  align-self: center;
+  padding-bottom: 1rem;
+}
+
 #legislation-container {
   padding-bottom : 1rem;
   color : #2b2b2b;
