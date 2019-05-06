@@ -6,72 +6,72 @@ const SENATE_BASE_DOCUMENT_URL = 'https://www.senate.mo.gov/19info/pdf-bill/intr
 
 const graphql_request = require('graphql-request');
 const graphClient = new graphql_request.GraphQLClient(OPEN_STATES_ENDPOINT, {
-  headers: {
-    'x-api-key' : OPEN_STATES_KEY
-  }
-})
+	headers: {
+		'x-api-key' : OPEN_STATES_KEY
+	}
+});
 
 const currentYear = new Date().getFullYear();
 
 const obj = {
 
-  getMoreLink(sources, organization) {
+	getMoreLink(sources, organization) {
 
-    let sourcesLink = '';
+		let sourcesLink = '';
 
-    if(sources.length >= 1)
-    {
-      if(organization === 'Senate')
-      {
-        sourcesLink = sources[0].url;
-      }
-      else
-      {
-        sourcesLink = sources[1].url;
-      }
-    }
+		if(sources.length >= 1)
+		{
+			if(organization === 'Senate')
+			{
+				sourcesLink = sources[0].url;
+			}
+			else
+			{
+				sourcesLink = sources[1].url;
+			}
+		}
 
-    return sourcesLink;
+		return sourcesLink;
 
-  },
+	},
 
-  getBillAuthor(sponsorships) {
+	getBillAuthor(sponsorships) {
 
-    let mainSponsor = null;
-    let sponsorDetails = { name : '', party : '' };
+		let mainSponsor = null;
+		let sponsorDetails = { name : '', party : '' };
 
-    if(sponsorships.length > 1) {
+		if(sponsorships.length > 1) {
 
-      sponsorships.forEach(function (sponsor) {
-        if(sponsor.primary && sponsor.classification === 'primary')
-        {
-          mainSponsor = sponsor;
-        }
-      });
+			sponsorships.forEach(function (sponsor) {
+				if(sponsor.primary && sponsor.classification === 'primary')
+				{
+					mainSponsor = sponsor;
+				}
+			});
 
-    }
-    else {
-      mainSponsor = sponsorships[0];
-    }
+		}
+		else {
+			mainSponsor = sponsorships[0];
+		}
 
-    sponsorDetails.name = mainSponsor.name;
-    if(mainSponsor.familyName)
-    {
-      console.log(mainSponsor.familyName);
-    }
+		sponsorDetails.name = mainSponsor.name;
+		if(mainSponsor.familyName)
+		{
+			console.log(mainSponsor.familyName);
+		}
 
-    if(mainSponsor.person)
-    {
-      sponsorDetails.party = mainSponsor.person.currentMemberships.organization.name;
-    }
+		if(mainSponsor.person)
+		{
+			sponsorDetails.party = mainSponsor.person.currentMemberships.organization.name;
+		}
 
-    return sponsorDetails;
+		return sponsorDetails;
     
-  },
+	},
   
-  getBillData : function(state, session, billNum, callback) {
+	getBillData : function(state, session, billNum, callback) {
 
-    let query = `    {
+		let query = `    {
       bill(jurisdiction: "${state}", session: "${session}", identifier: "${billNum}") {
         identifier
         title
@@ -133,33 +133,33 @@ const obj = {
           url
         }
       }
-    }`
+    }`;
   
-    graphClient.request(query).then(data => {
+		graphClient.request(query).then(data => {
 
-      let sponsorDetails = this.getBillAuthor(data.bill.sponsorships);
-      let billMoreLink = this.getMoreLink(data.bill.sources, data.bill.fromOrganization);
+			let sponsorDetails = this.getBillAuthor(data.bill.sponsorships);
+			let billMoreLink = this.getMoreLink(data.bill.sources, data.bill.fromOrganization);
 
-      console.log(JSON.stringify(data.bill));
+			console.log(JSON.stringify(data.bill));
 
-      let billData = {
-        num : data.bill.identifier.replace(' ', '-'),
-        title : data.bill.title,
-        author : sponsorDetails.name,
-        affiliation : sponsorDetails.party, 
-        documentAvailable : data.bill.fromOrganization.name === 'Senate',
-        status : data.bill.versions.length !== 0 ? data.bill.versions[0].note : '',
-        link : billMoreLink,
-        pdf_link : SENATE_BASE_DOCUMENT_URL + data.bill.identifier.replace(' ','') + '.pdf'
-      };
+			let billData = {
+				num : data.bill.identifier.replace(' ', '-'),
+				title : data.bill.title,
+				author : sponsorDetails.name,
+				affiliation : sponsorDetails.party, 
+				documentAvailable : data.bill.fromOrganization.name === 'Senate',
+				status : data.bill.versions.length !== 0 ? data.bill.versions[0].note : '',
+				link : billMoreLink,
+				pdf_link : SENATE_BASE_DOCUMENT_URL + data.bill.identifier.replace(' ','') + '.pdf'
+			};
 
-      callback(billData);
-    })
-  },
+			callback(billData);
+		});
+	},
 
-  getCurrentBills : function(numBills, chamber)
-  {
-    let query = `{
+	getCurrentBills : function(numBills, chamber)
+	{
+		let query = `{
       bills(first: ${numBills}, jurisdiction: "Missouri", session: "${currentYear}", chamber: "${chamber}") {
           edges {
             node {
@@ -179,12 +179,12 @@ const obj = {
           }
         }
       }
-    `
+    `;
 
-    graphClient.request(query).then(data =>
-      console.log(data)
-    )
-  }
-}
+		graphClient.request(query).then(data =>
+			console.log(data)
+		);
+	}
+};
 
 module.exports = obj;
